@@ -223,4 +223,14 @@ public class PredefinedStepDefs {
     public void iMouseOverElementWithXpath(String xpath) {
         new Actions(getDriver()).moveToElement(getDriver().findElement(By.xpath(xpath))).perform();
     }
+
+//    @Then("^I wait for the count of elements with xpath \"([^\"]*)\" more than 0")
+//    public void countOfElementsMoreThanZero(String xpath) {
+//        new WebDriverWait(getDriver(), 10, 1000)
+//                .until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath),0));
+//    }
+    @Then("^I wait for element with xpath \"([^\"]*)\" to be clickable")
+    public void iWaitForElementWithXpathToBeClickable(String xpath) {
+    new WebDriverWait(getDriver(), 10, 200).until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+}
 }

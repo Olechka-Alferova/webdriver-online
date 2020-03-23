@@ -10,16 +10,22 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import support.TestContext;
+import support.TestRunner;
 
 import javax.sound.midi.Soundbank;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.*;
 import static support.TestContext.*;
 
-public class market {
+public class Market {
     @Given("I go to {string} page")
     public void iGoToPage(String page) {
         switch (page) {
+            case "usps":
+                getDriver().get("https://www.usps.com/");
+                break;
             case "quote":
                 getDriver().get("https://skryabin.com/market/quote.html");
                 break;

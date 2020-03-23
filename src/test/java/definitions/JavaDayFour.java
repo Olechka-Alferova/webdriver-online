@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class javaDayFour {
+public class JavaDayFour {
     @Given("I say hello world 3 times")
     public void iSayHelloWorld() {
         System.out.println("Hello world!");

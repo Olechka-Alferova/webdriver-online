@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import support.TestContext;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.*;
@@ -100,5 +101,17 @@ public class Usps {
 
         String totalPrice = resultsElement.getText();
         assertThat(totalPrice).contains(price);
+    }
+
+    @And("I verify each row has {string} zip code")
+    public void iVerifyEachRowHasZipCode(String zipCode) throws InterruptedException {
+        WebDriverWait explicitWait = new WebDriverWait(getDriver(),5);
+        WebElement resultElements = getDriver().findElement(By.xpath("//div[@id='zipByAddressDiv']"));
+        explicitWait.until(driver -> resultElements.isDisplayed());
+
+        List<WebElement> zipCoderesults = getDriver().findElements(By.xpath("//div[@id='zipByAddressDiv']//strong"));
+        for (WebElement element : zipCoderesults) {
+            assertThat(element.getText()).contains(zipCode);
+        }
     }
 }

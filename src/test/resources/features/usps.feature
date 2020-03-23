@@ -8,6 +8,7 @@ Feature: USPS test suite
     When I go to Lookup ZIP page by address
     And I fill out "4970 El Camino Real" street, "Los Altos" city, "CA" state
     Then I validate "94022" zip code exists in the result
+    And I verify each row has "94022" zip code
 
   @usps02
   Scenario: Validate ZIP code for California capitol building

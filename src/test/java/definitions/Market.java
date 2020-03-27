@@ -9,6 +9,9 @@ import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
 import support.TestContext;
 import support.TestRunner;
 
@@ -64,7 +67,7 @@ public class Market {
         getDriver().manage().logs().get("browser");
     }
 
-//    @And("I change resolution to {string}")
+    //    @And("I change resolution to {string}")
     public void iChangeResolutionTo(String resolution) {
         if (resolution.equals("phone")) {
             int widthA = 400;
@@ -85,9 +88,9 @@ public class Market {
     @And("I change resolution to {string}")
     public void iChangeResolutionToA(String resolution) {
         if (resolution.equals("phone")) {
-            getDriver().manage().window().setSize(new Dimension(400,768));
+            getDriver().manage().window().setSize(new Dimension(400, 768));
         } else if (resolution.equals("desktop")) {
-            getDriver().manage().window().setSize(new Dimension(1024,768));
+            getDriver().manage().window().setSize(new Dimension(1024, 768));
         } else {
             throw new RuntimeException("Unsupported resolution: " + resolution);
         }
@@ -177,5 +180,26 @@ public class Market {
 
         String countryOfOrigin = getDriver().findElement(By.xpath("//b[@name='countryOfOrigin']")).getText();
         assertThat(countryOfOrigin).isEqualTo("Russia");
+    }
+
+    @And("I fill multi-select using Action class")
+    public void iFillMultiSelectUsingActionClass() throws InterruptedException {
+        WebElement ford = getDriver().findElement(By.xpath("//select[@name='carMake']/option[@value='Ford']"));
+        WebElement bmw = getDriver().findElement(By.xpath("//select[@name='carMake']/option[@value='BMW']"));
+        new Actions(getDriver()).
+                click(ford).
+                keyDown(Keys.COMMAND). // press Command key on the keyboard
+                click(bmw).
+                perform();
+        Thread.sleep(2000);
+    }
+
+    @Then("I fill multi-select using Select class")
+    public void iFillMultiSelectUsingSelectClass() {
+        WebElement carMake = getDriver().findElement(By.xpath("//select[@name='carMake']"));
+        Select carSelect = new Select(carMake); // keep in mind that Select class can be used only for the elements with Select Tag
+        carSelect.selectByValue("Ford");
+        carSelect.selectByValue("BMW");
+        carSelect.deselectAll();
     }
 }

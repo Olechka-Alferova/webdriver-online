@@ -29,14 +29,18 @@ Feature: Market application test suite
     When I verify email field behavior
 
   @market06
-    Scenario: Fill out optional fields and submit the page
+  Scenario: Fill out optional fields and submit the page
     Given I go to "quote" page
     When I fill out required fields
     And I fill out optional fields
     And I submit the form
     Then I verify that fields values recorded correctly
 
-
+  @market07
+  Scenario: Multi-select
+    Given I go to "quote" page
+    And I fill multi-select using Select class
+    Then I fill multi-select using Action class
 
 
 

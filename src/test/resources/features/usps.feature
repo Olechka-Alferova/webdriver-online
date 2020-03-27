@@ -33,3 +33,30 @@ Feature: USPS test suite
     Then I validate the price is "$107.05"
     And I validate the price is "$81.75"
     Then I validate the price is "$38.60"
+
+  @usps05
+  Scenario: Phone number of the nearest Accountable Mail Pickup Service Post Office for Portnov Computer School
+    Given I go to "usps" page
+    When I go to Find a Location Page
+    And I filter by "Post Offices™" Location Types, "Pickup Services" Services, "Accountable Mail" Available Services
+    And I fill in "4970 El Camino Real 110" street, "Los Altos" city, "CA" state
+    Then I print the phone number and validate it is "800-275-8777"
+
+  @usps06
+  Scenario: Test to print console log
+    Given I go to "yahoo" page
+    And I print browser log in the console
+
+  @usps07
+  Scenario: Mouseover cases
+    Given I go to "usps" page
+    When I go to MailAndShip tab
+    Then I go to QuickTools tab
+    And I validate mouseover for header tabs
+
+
+
+
+
+
+

@@ -38,6 +38,12 @@ public class Market {
             case "yahoo":
                 getDriver().get("https://www.yahoo.com/");
                 break;
+            case "converter":
+                getDriver().get("https://www.unitconverters.net/");
+                break;
+            case "calculator":
+                getDriver().get("http://www.calculator.net/");
+                break;
             default:
                 throw new RuntimeException("Unsupported page: " + page);
         }
@@ -186,7 +192,7 @@ public class Market {
     public void iFillMultiSelectUsingActionClass() throws InterruptedException {
         WebElement ford = getDriver().findElement(By.xpath("//select[@name='carMake']/option[@value='Ford']"));
         WebElement bmw = getDriver().findElement(By.xpath("//select[@name='carMake']/option[@value='BMW']"));
-        new Actions(getDriver()).
+        getActions().
                 click(ford).
                 keyDown(Keys.COMMAND). // press Command key on the keyboard
                 click(bmw).

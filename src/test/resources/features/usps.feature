@@ -54,9 +54,16 @@ Feature: USPS test suite
     Then I go to QuickTools tab
     And I validate mouseover for header tabs
 
-
-
-
-
+  @usps08
+  Scenario Outline: Validate ZIP codes for different addresses  // Scenario Template the same
+    Given I go to "usps" page
+    When I go to Lookup ZIP page by address
+    And I fill out "<address>" street, "<city>" city, "<state>" state
+    Then I validate "<zipCode>" zip code exists in the result
+    Examples:
+      | address             | city      | state | zipCode |
+      | 4970 El Camino Real | Los Altos | CA    | 94022   |
+      | 11 Wall street      | Ney York  | NY    | 10005   |
+      | 111 S Michigan Av   | Chicago   | IL    | 60603   |
 
 

@@ -102,9 +102,8 @@ public class Usps {
 
     @Then("I validate the price is {string}")
     public void iValidateThePriceIs(String price) {
-        WebDriverWait explicitWait = new WebDriverWait(getDriver(), 5);
         WebElement resultsElement = getDriver().findElement(By.id("mail-services-sm-lg"));
-        explicitWait.until(driver -> resultsElement.isDisplayed());
+        getWait().until(driver -> resultsElement.isDisplayed());
 
         String totalPrice = resultsElement.getText();
         assertThat(totalPrice).contains(price);
@@ -112,9 +111,8 @@ public class Usps {
 
     @And("I verify each row has {string} zip code")
     public void iVerifyEachRowHasZipCode(String zipCode) {
-        WebDriverWait explicitWait = new WebDriverWait(getDriver(), 5);
         WebElement resultElements = getDriver().findElement(By.xpath("//div[@id='zipByAddressDiv']"));
-        explicitWait.until(driver -> resultElements.isDisplayed());
+        getWait().until(driver -> resultElements.isDisplayed());
 
         List<WebElement> zipCoderesults = getDriver().findElements(By.xpath("//div[@id='zipByAddressDiv']//strong"));
         for (WebElement element : zipCoderesults) {
@@ -136,14 +134,14 @@ public class Usps {
     @When("I go to MailAndShip tab")
     public void iGoToMailAndShipTab() {
         WebElement mailAndShip = getDriver().findElement(By.xpath("//a[@id='mail-ship-width']"));
-        new Actions(getDriver()).moveToElement(mailAndShip).perform();
+        getActions().moveToElement(mailAndShip).perform();
         getDriver().findElement(By.xpath("//a[@id='navmailship']/../div[@class='repos']")).isDisplayed();
     }
 
     @Then("I go to QuickTools tab")
     public void iGoToQuickToolsTab() {
         WebElement QuickTools = getDriver().findElement(By.xpath("//a[@class='nav-first-element menuitem']"));
-        new Actions(getDriver()).moveToElement(QuickTools).perform();
+        getActions().moveToElement(QuickTools).perform();
         getDriver().findElement(By.xpath("//a[@id='navquicktools']/..//ul")).isDisplayed();
     }
 
@@ -163,29 +161,35 @@ public class Usps {
     @And("I filter by {string} Location Types, {string} Services, {string} Available Services")
     public void iFilterByLocationTypesServicesAvailableServices(String locationTypes, String services, String availableServices) {
         getDriver().findElement(By.xpath("//button[@id='post-offices-select']")).click();
-        if (locationTypes.equals("Post Offices™")) {
-            getDriver().findElement(By.xpath("//a[string()='Post Offices™']")).click();
-            // 'string' in Xpath can be used if we need to get data from 'sup' tag
-        } else if (locationTypes.equals("Post Offices™ and Approved Postal Providers®")) {
-            getDriver().findElement(By.xpath("//a[contains(string(),'Post Offices™ and Approved')]")).click();
-        } else throw new RuntimeException("Not supported Location Type: " + locationTypes);
+        getDriver().findElement(By.xpath("//a[string()='" + locationTypes + "']")).click();
+        // 'string' in Xpath can be used if we need to get data from 'sup' tag
 
         getDriver().findElement(By.xpath("//button[@id='service-type-select']")).click();
-        if (services.equals("Pickup Services")) {
-            getDriver().findElement(By.id("pickupPo")).click();
-        } else throw new RuntimeException("Not supported service Type: " + services);
+        getDriver().findElement(By.xpath("//a[string()='" + services + "']")).click();
 
         getDriver().findElement(By.xpath("//button[@id='available-service-select']")).click();
-        if (availableServices.equals("Accountable Mail")) {
-            getDriver().findElement(By.xpath("//*[@id='available-service-select']/..//a[@data-value='accountable']")).click();
-        } else throw new RuntimeException("Not supported available service Type: " + availableServices);
+        getDriver().findElement(By.xpath("//a[string()='" + availableServices + "']")).click();
     }
 
     @And("I fill in {string} street, {string} city, {string} state")
     public void iFillInStreetCityState(String street, String city, String state) {
         getDriver().findElement(By.id("search-input")).click();
+
+        WebElement streetAddress = getDriver().findElement(By.xpath("//input[@id='addressLineOne']"));
+        getWait(2).until(ExpectedConditions.visibilityOf(streetAddress));
+        streetAddress.sendKeys(street);
+
+//        if (!streetAddress.getAttribute("value").equals(streetAddress)) {
+//            streetAddress.clear();
+//            streetAddress.sendKeys(street);
+//        }
+        for (int i = 0; !streetAddress.getAttribute("value").equals(street) && i < 5; i++) {
+            // getAttribute("value") - all inputs have "value" as default even it's not in DOM !!!
+            streetAddress.clear();
+            streetAddress.sendKeys(street);
+        }
+
         getDriver().findElement(By.id("cityOrZipCode")).sendKeys(city);
-        getDriver().findElement(By.xpath("//input[@id='addressLineOne']")).sendKeys(street);
 
         WebElement stateSelect = getDriver().findElement(By.xpath("//select[@id='servicesStateSelect']"));
         new Select(stateSelect).selectByValue(state);
@@ -195,9 +199,8 @@ public class Usps {
 
     @Then("I print the phone number and validate it is {string}")
     public void iPrintThePhoneNumberAndValidateItIs(String phone) {
-        WebDriverWait explicitWait = new WebDriverWait(getDriver(), 5);
         WebElement detailRow = getDriver().findElement(By.xpath("//div[@id='1440608']"));
-        explicitWait.until(ExpectedConditions.elementToBeClickable(detailRow));
+        getWait().until(ExpectedConditions.elementToBeClickable(detailRow));
         detailRow.click();
         String phoneResult = getDriver().findElement(By.xpath("//p[@id='detailTollFree']")).getText();
         assertThat(phoneResult).contains(phone);

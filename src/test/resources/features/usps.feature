@@ -66,4 +66,21 @@ Feature: USPS test suite
       | 11 Wall street      | Ney York  | NY    | 10005   |
       | 111 S Michigan Av   | Chicago   | IL    | 60603   |
 
+  @usps09
+  Scenario: Quadcopters delivery
+    Given I go to "usps" page
+    When I go to "Help" tab
+    And I perform "Quadcopters delivery" help search
+    Then I verify that no results of "Quadcopters delivery" available in help search
+
+  @usps10
+  Scenario: Every door direct mail
+    Given I go to "usps" page
+    When I go to "Every Door Direct Mail" under "Business"
+    And I search for "4970 El Camino Real, Los Altos, CA 94022"
+    And I click "Show Table" on the map
+    When I click "Select All" on the table
+    And I close modal window
+    Then I verify that summary of all rows of Cost column is equal Approximate Cost in Order Summary
+
 

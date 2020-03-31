@@ -30,9 +30,7 @@ public class TestContext {
         return driver;
     }
 
-    public static Actions getActions() {
-        return new Actions(driver);
-    }
+    public static Actions getActions() { return new Actions(driver); }
 
     public static WebDriverWait getWait() {
         return new WebDriverWait(driver, 5);

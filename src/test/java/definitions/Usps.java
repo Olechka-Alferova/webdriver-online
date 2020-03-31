@@ -1,11 +1,12 @@
 package definitions;
 
+import com.google.common.collect.Iterables;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.logging.LogEntries;
@@ -14,10 +15,9 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import support.TestContext;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.*;
 import static support.TestContext.*;
@@ -204,5 +204,78 @@ public class Usps {
         detailRow.click();
         String phoneResult = getDriver().findElement(By.xpath("//p[@id='detailTollFree']")).getText();
         assertThat(phoneResult).contains(phone);
+    }
+
+    @When("I go to {string} tab")
+    public void iGoToTab(String arg0) {
+        getDriver().findElement(By.xpath("//a[@class='menuitem'][contains(text(),'Help')]")).click();
+    }
+
+    @And("I perform {string} help search")
+    public void iPerformHelpSearch(String search) {
+        getDriver().findElement(By.xpath("//input[contains(@class,'search-field')]")).sendKeys(search);
+        getDriver().findElement(By.xpath("//ul[@class='lookup__list  visible']")).click();
+    }
+
+    @Then("I verify that no results of {string} available in help search")
+    public void iVerifyThatNoResultsOfAvailableInHelpSearch(String result) {
+
+       List<WebElement> resultElements = getDriver().findElements(By.xpath("//div[@class='slds-tile']"));
+       getWait().until(ExpectedConditions.visibilityOfAllElements(resultElements));
+
+       for (WebElement element : resultElements) {
+          assertThat(element.getText().contains(result)).isFalse();
+       }
+    }
+
+    @When("I go to {string} under {string}")
+    public void iGoToUnder(String dropItem, String menuItem) {
+        WebElement menuitemEl = getDriver().findElement(By.xpath("//a[@class='menuitem'][contains(text(),'"+ menuItem +"')]"));
+        getActions().moveToElement(menuitemEl).perform();
+        getDriver().findElement(By.xpath("//a[contains(text(),'"+ dropItem +"')]")).click();
+    }
+
+    @And("I search for {string}")
+    public void iSearchFor(String address) {
+        getDriver().findElement(By.id("address")).sendKeys(address);
+        getDriver().findElement(By.xpath("//fieldset[@class='search-form-field-group']/button[@type='submit']")).click();
+    }
+
+    @And("I click {string} on the map")
+    public void iClickOnTheMap(String showTable) {
+        By element = By.xpath("//a[contains(text(),'" +showTable +"')]");
+        getWait(10).until(ExpectedConditions.elementToBeClickable(element));
+        getDriver().findElement(element).click();
+    }
+
+    @When("I click {string} on the table")
+    public void iClickOnTheTable(String selectAll){
+        getDriver().findElement(By.xpath("//a[@class='totalsArea']")).click();
+    }
+
+    @And("I close modal window")
+    public void iCloseModalWindow() {
+        getDriver().findElement(By.xpath("//div[@id='modal-box-closeModal']")).click();
+    }
+
+    @Then("I verify that summary of all rows of Cost column is equal Approximate Cost in Order Summary")
+    public void iVerifyThatSummaryOfAllRowsOfCostColumnIsEqualApproximateCostInOrderSummary() {
+
+        WebElement lastRowElement =getDriver().findElement(By.xpath("(//td[@idx='7'])[25]")); // // last visible element on the page
+        getActions().moveToElement(lastRowElement).keyDown(Keys.COMMAND).sendKeys(Keys.PAGE_DOWN).perform(); // scroll down
+
+        getWait().until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//td[@idx='7'])[29]"))); // last element on the page
+
+        List<WebElement> tableRows = getDriver().findElements(By.xpath("//td[@idx='7']")); // list of all elements
+        double sumRowAmount = 0;
+        for (WebElement row : tableRows) {
+            String s = row.getText().substring(1);
+            Double number = Double.parseDouble(s);
+            System.out.println(number);
+            sumRowAmount += number;
+        }
+        String approxCost = getDriver().findElement(By.xpath("//span[@class='approx-cost']")).getText();
+        Double approxCostToDouble = Double.parseDouble(approxCost);
+        assertThat(sumRowAmount).isCloseTo(approxCostToDouble,offset(0.2));
     }
 }

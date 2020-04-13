@@ -4,10 +4,8 @@ import com.google.common.collect.Iterables;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
+import cucumber.api.java.sl.In;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
@@ -18,6 +16,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static support.TestContext.*;
@@ -207,8 +206,8 @@ public class Usps {
     }
 
     @When("I go to {string} tab")
-    public void iGoToTab(String arg0) {
-        getDriver().findElement(By.xpath("//a[@class='menuitem'][contains(text(),'Help')]")).click();
+    public void iGoToTab(String menuItem) {
+        getDriver().findElement(By.xpath("//a[@class='menuitem'][contains(text(),'"+ menuItem + "')]")).click();
     }
 
     @And("I perform {string} help search")
@@ -260,22 +259,99 @@ public class Usps {
 
     @Then("I verify that summary of all rows of Cost column is equal Approximate Cost in Order Summary")
     public void iVerifyThatSummaryOfAllRowsOfCostColumnIsEqualApproximateCostInOrderSummary() {
+        By oneRow = By.xpath("//td[@idx='7']");
+        int tableRowIndex = getDriver().findElements(oneRow).size(); // number of all visible elements
 
-        WebElement lastRowElement =getDriver().findElement(By.xpath("(//td[@idx='7'])[25]")); // // last visible element on the page
-        getActions().moveToElement(lastRowElement).keyDown(Keys.COMMAND).sendKeys(Keys.PAGE_DOWN).perform(); // scroll down
+        WebElement visibleEl = getDriver().findElement(By.xpath("(//td[@idx='7'])[" + tableRowIndex + "]")); // found last visible element
+        getActions().moveToElement(visibleEl).keyDown(Keys.COMMAND).sendKeys(Keys.PAGE_DOWN).perform(); // scroll down
 
-        getWait().until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//td[@idx='7'])[29]"))); // last element on the page
+        getWait(10).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//td[@idx='7'])[29]"))); // last element
+        List<WebElement> totalTableRows = getDriver().findElements(oneRow);
 
-        List<WebElement> tableRows = getDriver().findElements(By.xpath("//td[@idx='7']")); // list of all elements
         double sumRowAmount = 0;
-        for (WebElement row : tableRows) {
-            String s = row.getText().substring(1);
+        for (WebElement row : totalTableRows) {
+            String s = row.getText().substring(1); // remove '$'
             Double number = Double.parseDouble(s);
-            System.out.println(number);
             sumRowAmount += number;
         }
         String approxCost = getDriver().findElement(By.xpath("//span[@class='approx-cost']")).getText();
         Double approxCostToDouble = Double.parseDouble(approxCost);
         assertThat(sumRowAmount).isCloseTo(approxCostToDouble,offset(0.2));
+    }
+
+    @And("I {string} third-party agreement")
+    public void iThirdPartyAgreement(String alertAction) {
+        getDriver().findElement(By.id("thirdPartyButton")).click();
+
+        if (alertAction.equals("accept")) {
+        getDriver().switchTo().alert().accept();
+        } else getDriver().switchTo().alert().dismiss();
+    }
+
+    @When("I validate the alert window have message {string}")
+    public void iValidateTheAlertWindowHaveMessage(String alertMessage) {
+        getDriver().findElement(By.id("thirdPartyButton")).click();
+        String resultAlertText = getDriver().switchTo().alert().getText();
+        assertThat(resultAlertText).isEqualTo(alertMessage);
+        getDriver().switchTo().alert().accept();
+    }
+
+    @When("I perform {string} search")
+    public void iPerformSearch(String freeBoxSearch) {
+        WebElement search = getDriver().findElement(By.xpath("//li[@class='nav-search menuheader']"));
+        getActions().moveToElement(search).perform();
+        getDriver().findElement(By.id("global-header--search-track-search")).sendKeys(freeBoxSearch);
+        getActions().sendKeys(Keys.ENTER).perform();
+    }
+
+    @And("I set {string} in filters")
+    public void iSetInFilters(String filterItem) {
+        WebElement spinner = getDriver().findElement(By.xpath("//div[@class='spinner-content']"));
+        getWait().until(ExpectedConditions.invisibilityOf(spinner));
+        getDriver().findElement(By.xpath("//li//a[@title='"+ filterItem +"']")).click();
+        getWait().until(ExpectedConditions.invisibilityOf(spinner));
+    }
+
+    @Then("I verify that {string} results found")
+    public void iVerifyThatResultsFound(String resultNumber) {
+        String heading = getDriver().findElement(By.id("searchResultsHeading")).getText();
+//        assertThat(heading).contains(resultNumber);
+       //  OR
+        String count = heading.replaceAll("\\D*",""); // replace everything except numbers to ""
+//        assertThat(count).isEqualTo(resultNumber);
+        // OR
+        int actualCount = Integer.parseInt(count);
+        int expectedCount= Integer.parseInt(resultNumber);
+        assertThat(expectedCount).isEqualTo(actualCount);
+
+        int resultCount = getDriver().findElements(By.xpath("//ul[@id='records']/li")).size();
+        assertThat(resultCount).isEqualTo(expectedCount);
+        // OR
+//        String recordNumbers = String.valueOf(resultCount);
+//        assertThat(recordNumbers).isEqualTo(resultNumber);
+    }
+
+    @When("I select {string} in results")
+    public void iSelectInResults(String shippType) {
+       getDriver().findElement(By.xpath("//span[contains(text(),'" + shippType +"')]")).click();
+    }
+
+    @And("I click {string} button")
+    public void iClickButton(String shipNow) {
+        By locator = By.xpath("//a[@class='button--primary']");
+        getWait().until(ExpectedConditions.visibilityOfElementLocated(locator));
+
+        getDriver().findElement(locator).click();
+
+        for (String handle : getDriver().getWindowHandles()) {
+            getDriver().switchTo().window(handle);
+        }
+        getWait(10).until(ExpectedConditions.titleContains("Sign In"));
+    }
+
+    @Then("I validate that Sign in is required")
+    public void iValidateThatSignInIsRequired() {
+    assertThat(getDriver().findElement(By.xpath("//input[@id='username']")).isDisplayed()).isTrue();
+    assertThat(getDriver().findElement(By.xpath("//input[@id='password']")).isDisplayed()).isTrue();
     }
 }

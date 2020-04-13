@@ -42,7 +42,29 @@ Feature: Market application test suite
     And I fill multi-select using Select class
     Then I fill multi-select using Action class
 
+  @market07
+  Scenario: Quote alert tests
+    Given I go to "quote" page
+    When I validate the alert window have message "Do you accept third party agreement? Hit OK if accept."
+    And I "accept" third-party agreement
+    Then I "dismiss" third-party agreement
 
+  @market08
+  Scenario: Additional info - test for iFrame
+    Given I go to "quote" page
+    And fill out additional info with name "John Doe" and phone "1234567890"
+    And I fill out required fields
+    Then I submit the form
+    And I verify that iFrame fields values recorded correctly with name "John Doe" and phone "1234567890"
 
+  @market09
+  Scenario: Related docs
+    Given I go to "quote" page
+    And I verify "Document 2" present on related docs page
+    And I fill out required fields
+    Then I submit the form
 
-
+  @market10
+  Scenario: JavaScript click
+    Given I go to "ecosia" page
+    And I fill out search engine field with "BDD" and search

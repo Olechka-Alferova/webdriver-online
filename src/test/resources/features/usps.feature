@@ -83,4 +83,26 @@ Feature: USPS test suite
     And I close modal window
     Then I verify that summary of all rows of Cost column is equal Approximate Cost in Order Summary
 
+@usps11
+Scenario: Informed delivery enabled
+  Given I go to "usps" page
+  When I go to "Informed delivery" section
+  And I enter "94022" zip code for informed delivery
+  Then I verify that informed delivery is "enabled"
 
+  @usps12
+  Scenario: Informed delivery disabled
+    Given I go to "usps" page
+    When I go to "Informed delivery" section
+    And I enter "23424" zip code for informed delivery
+    Then I verify that informed delivery is "disabled"
+
+  @usps13
+  Scenario: Verify location
+    Given I go to "usps" page
+    When I perform "Free boxes" search
+    And I set "Mail & Ship" in filters
+    Then I verify that "7" results found
+    When I select "Priority Mail | USPS" in results
+    And I click "Ship now" button
+    Then I validate that Sign in is required

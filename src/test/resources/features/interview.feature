@@ -17,4 +17,6 @@ Feature: Interview questions
     | 12|
     | 17 |
 
-
+  @challenge02
+  Scenario: Perform coding challenges
+  Given I perform coding challenges

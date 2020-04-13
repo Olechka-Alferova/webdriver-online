@@ -6,10 +6,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 import support.TestContext;
@@ -17,6 +14,7 @@ import support.TestRunner;
 
 import javax.sound.midi.Soundbank;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.*;
@@ -43,6 +41,9 @@ public class Market {
                 break;
             case "calculator":
                 getDriver().get("http://www.calculator.net/");
+                break;
+            case "ecosia":
+                getDriver().get("https://www.ecosia.org");
                 break;
             default:
                 throw new RuntimeException("Unsupported page: " + page);
@@ -207,5 +208,49 @@ public class Market {
         carSelect.selectByValue("Ford");
         carSelect.selectByValue("BMW");
         carSelect.deselectAll();
+    }
+
+    @And("fill out additional info with name {string} and phone {string}")
+    public void fillOutAdditionalInfoWithNameAndPhone(String name, String phone) {
+        getDriver().switchTo().frame("additionalInfo"); // switch to iFrame by tag name (or ID)
+        getDriver().findElement(By.id("contactPersonName")).sendKeys(name);
+        getDriver().findElement(By.id("contactPersonPhone")).sendKeys(phone);
+        getDriver().switchTo().defaultContent(); // switch back to main content from iFrame
+    }
+
+    @And("I verify that iFrame fields values recorded correctly with name {string} and phone {string}")
+    public void iVerifyThatIFrameFieldsValuesRecordedCorrectlyWithNameAndPhone(String name, String phone) {
+        String resultName = getDriver().findElement(By.xpath("//b[@name='contactPersonName']")).getText();
+        String resultPhone = getDriver().findElement(By.xpath("//b[@name='contactPersonPhone']")).getText();
+        assertThat(resultName).isEqualTo(name);
+        assertThat(resultPhone).isEqualTo(phone);
+    }
+
+    @And("I verify {string} present on related docs page")
+    public void iVerifyPresentOnRelatedDocsPage(String document) {
+        String originalWindow = getDriver().getWindowHandle(); // get original window handle
+        getDriver().findElement(By.xpath("//button[contains(@onclick,'window.open')]")).click();
+
+        Set<String> allWindows = getDriver().getWindowHandles(); // get set of all current handles for open windows
+
+        for (String handle : allWindows) {
+        getDriver().switchTo().window(handle);  // always will finally switch to last window
+        }
+
+        assertThat(getDriver().getTitle()).isEqualTo("Documents Page");
+        String result= getDriver().findElement(By.xpath("//html//body//ul")).getText();
+        assertThat(result).contains(document);
+
+        getDriver().close(); // optional - to close the current window
+        getDriver().switchTo().window(originalWindow); // go back to initial window
+    }
+
+    @And("I fill out search engine field with {string} and search")
+    public void iFillOutSearchEngineFieldWithAndSearch(String search) {
+        getDriver().findElement(By.name("q")).sendKeys(search);
+        WebElement submitButton = getDriver().findElement(By.xpath("//button[@type='submit']"));
+       // covered submit button so you  can use ENTER button of JS click
+        JavascriptExecutor js = (JavascriptExecutor) getDriver();
+        js.executeScript("arguments[0].click",submitButton);
     }
 }

@@ -45,6 +45,9 @@ public class Market {
             case "ecosia":
                 getDriver().get("https://www.ecosia.org");
                 break;
+            case "ups":
+                getDriver().get("https://www.ups.com/us/en/Home.page");
+                break;
             default:
                 throw new RuntimeException("Unsupported page: " + page);
         }

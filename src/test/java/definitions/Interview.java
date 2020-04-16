@@ -80,6 +80,16 @@ public class Interview {
         String str = "WebDriver";
         System.out.println("initial string: " + str);
         printReserse(str);
+        int [] array3 = {1, 5, 8, 9, 2, 3, 4, 10, 5,7};
+        System.out.println("max number: " + findMaxNumber(array3));
+        System.out.println("min number: " + findMinNumber(array3));
+        System.out.println(reserse(str));
+        String sentence = "Web Driver";
+        System.out.println(reversedSentence(sentence));
+        String palindrome = "madam";
+        String palindrome1 = "hello";
+        System.out.println(isPalindrome (palindrome));
+        System.out.println(isPalindrome (palindrome1));
     }
 
     //    #  Write a function that prints all numbers from 0 up to n
@@ -145,9 +155,76 @@ public class Interview {
         } return false;
     }
 
+//    #  Write a function that print reversed string
     public void printReserse(String string) {
         for (int i = string.length()-1; i >=0; i--) { // i - index from 0 => -1 otherwise indexOfBound
             System.out.print(string.charAt(i));  //not println! - in one line
         }
+    }
+
+    @Given("I validate {int} number for Fizz Buzz")
+    public void iValidateNumberForFizzBuzz(int number) {
+//        Write a function, accepts integer argument
+//        It should print all the numbers up to the argument
+//        BUT:
+//        if number is multiple of 3, it should print Fizz instead of number
+//        if number is multiple of 5, it should print Buzz instead of number
+//        If it is multiple of both 3 and 5, it should print FizzBuzz instead of number
+//        Result for 20:
+//        1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz 16 17 Fizz 19 Buzz
+              for (int i = 0; i <= number; i++) {
+                  if ( i%3 == 0 && i%5 == 0) {
+                      System.out.print("FizzBuzz");
+                  } else if (i%3 == 0) {
+                      System.out.print("Fizz");
+                  } else if (i%5 == 0) {
+                      System.out.print("Buzz");
+                  } else
+                  System.out.print(i);
+              }
+    }
+
+ //#  Write a function that find a Max number in array
+    public int findMaxNumber (int [] arr) {
+        int max = arr[0]; // 1st element in the array to compare to the others
+        for (int i = 1; i < arr.length; i++) { // from 1 not 0 because 0 is max
+            if (max < arr[i]) {
+                max = arr[i];
+            }
+        } return max;
+    }
+
+    public int findMinNumber (int [] arr) {
+        int min = arr[0]; // 1st element in the array to compare to the others
+        for (int i = 1; i < arr.length; i++) { // from 1 not 0 because 0 is max
+            if (min > arr[i]) {
+                min = arr[i];
+            }
+        } return min;
+    }
+
+//    #  Write a function that return reversed string
+    public  String reserse (String str) {
+        String reversed = ""; // empty string
+        for (int i = str.length()-1; i >= 0; i--) { // i - index from 0 => -1 otherwise indexOfBound
+             reversed += str.charAt(i);
+        } return reversed;
+    }
+
+//    #  Write a function that return reversed sentence
+    public String reversedSentence (String str) {
+        String[] splitted = str.split(" "); // split the sentence by space
+        String reversed = "";
+        for (int i = splitted.length -1; i >= 0; i--) {
+            reversed += " " + splitted[i];
+        } return reversed;
+    }
+
+//    #  Write a function that check palindrome
+    public boolean isPalindrome (String word) {
+        String reversed = "";
+        for (int i = word.length()-1; i >= 0; i--) {
+            reversed += word.charAt(i);
+        } return word.equals(reversed);
     }
 }

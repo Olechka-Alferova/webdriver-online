@@ -17,6 +17,11 @@ Feature: Interview questions
     | 12|
     | 17 |
 
-  @challenge02
+  @challenge03
   Scenario: Perform coding challenges
   Given I perform coding challenges
+
+  @challenge04
+  Scenario: Perform coding challenges Fizz Buzz
+    Given I validate 20 number for Fizz Buzz
+

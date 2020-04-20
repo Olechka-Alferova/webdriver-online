@@ -80,7 +80,7 @@ public class Interview {
         String str = "WebDriver";
         System.out.println("initial string: " + str);
         printReserse(str);
-        int [] array3 = {1, 5, 8, 9, 2, 3, 4, 10, 5,7};
+        int [] array3 = {9, 5, 8, 2, 1,  3, 4, 10, 5,7};
         System.out.println("max number: " + findMaxNumber(array3));
         System.out.println("min number: " + findMinNumber(array3));
         System.out.println(reserse(str));
@@ -90,6 +90,11 @@ public class Interview {
         String palindrome1 = "hello";
         System.out.println(isPalindrome (palindrome));
         System.out.println(isPalindrome (palindrome1));
+        findTwoMaxNumbers(array3);
+        System.out.println(isPrime(17));
+        System.out.println(reverse3rd(str));
+        System.out.println(reverse3rdFromEnd(str));
+        System.out.println(countChar("abcdefa", 'r'));
     }
 
     //    #  Write a function that prints all numbers from 0 up to n
@@ -227,4 +232,71 @@ public class Interview {
             reversed += word.charAt(i);
         } return word.equals(reversed);
     }
+
+    public void findTwoMaxNumbers (int [] arr) {
+        int max1 = Integer.MIN_VALUE;
+        int max2 = Integer.MIN_VALUE;
+        for (int i =0; i < arr.length; i ++) {
+            if (max1 < arr[1]) {
+                max2 = max1;
+                max1 = arr[i];
+            } else if (max2 < arr[i]) {
+                max2 = arr[i];
+            }
+        }
+        System.out.println("First max: " +max1 +" Second max: " +max2);
+    }
+
+//     Revert every 3rd character of a string
+//    reverse3rd("Result of reverse")
+    // W e b D r i v e r
+    // 1 2 3 4 5 6 7 8 9
+    public String reverse3rd (String str) {
+        String reversed = "";
+        for (int i =str.length() -1; i >=0; i --) {
+            if ((i +1) % 3 ==0) {
+                reversed += str.charAt(i);
+            }
+        } return reversed;
+    }
+
+    // W e b D r i v e r
+    // 9 8 7 6 5 4 3 2 1
+    public String reverse3rdFromEnd (String str) {
+        String reversed = "";
+        int j = 1;
+        for (int i =str.length() -1; i >=0; i --) {
+            if (j  % 3 == 0) {
+                reversed += str.charAt(i);
+            } j++;
+        } return reversed;
+    }
+
+    //• Find if number is prime
+// A prime number is a natural number greater than 1 that cannot be formed by multiplying two smaller natural numbers.
+    public boolean isPrime (int num) {
+        if (num < 2) {
+            return false;
+        }
+        if (num % 2 ==0 && num !=2) { // all even numbers are not prime except 2
+            return false;
+        }
+        for (int i = 3; i < num; i ++) {
+            if(num % i == 0) {
+                return false;
+            }
+        } return true;
+    }
+
+//• Count occurrence of specific character of a string
+   public int countChar (String word, char el) {
+        int count = 0;
+       for (char element : word.toCharArray()) {
+           if (element == (el)) {
+               count ++;
+           }
+   } return count;
+
+    }
+
 }

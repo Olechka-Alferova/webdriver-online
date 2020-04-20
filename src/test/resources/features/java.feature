@@ -43,3 +43,9 @@ Feature: Java day 04 and 05
   Scenario: Maps
     Given I work with maps
 
+  @java07
+  Scenario: Classes
+    Given I run cat classes
+    And I run dog classes
+    Then I run bird class
+

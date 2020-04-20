@@ -5,6 +5,10 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java8.Ru;
 import org.apache.logging.log4j.core.util.JsonUtils;
+import pages.Bird;
+import pages.Cat;
+import pages.Dog;
+import pages.Pet;
 
 import java.util.Arrays;
 import java.util.List;
@@ -186,4 +190,61 @@ public class JavaDayFour {
         System.out.println(admin.get("email"));
     }
 
+    @Given("I run cat classes")
+    public void iRunCatClasses() {
+        // Encapsulation
+        // Inheritance
+        // Abstraction
+        // Polymorphism - static and dynamic
+
+        Cat tom = new Cat(); // instance of a Cat class
+        tom.setName("Tom");
+        System.out.println("Cat's name is: " + tom.getName());
+        tom.walk();
+        tom.eat("fish");
+        tom.speak();
+
+        Cat jack = new Cat("Tom");
+        System.out.println("Cat's name: " +jack.getName());
+        jack.walk();
+        jack.eat("milk");
+        jack.speak();
+
+        Pet basik = new Cat("Basik"); // Pet not Cat
+        System.out.println("Cat's name: " +basik.getName());
+        basik.walk();
+        basik.eat("milk");
+        // will go to Cat's implementation of speak() - dynamic POLYMORPHISM
+        basik.speak();
+    }
+
+    @And("I run dog classes")
+    public void iRunDogClasses() {
+        Dog charlie = new Dog();
+        System.out.println("Dog name: " +charlie.getName());
+        charlie.setName("Charlie");
+        System.out.println("Dog name: " +charlie.getName());
+        charlie.speak();
+        charlie.walk();
+        charlie.eat("meat");
+
+        Pet jack = new Dog(); // Pet not Dog
+        jack.setName("Jack");
+        System.out.println("Dog name: " + jack.getName());
+        jack.walk();
+        jack.eat("anything");
+        // will go to Dog's implementation of speak() - dynamic POLYMORPHISM
+        jack.speak();
+    }
+
+    @Then("I run bird class")
+    public void iRunBirdClass() {
+        Bird bird = new Bird();
+        bird.setName("Lili");
+        System.out.println("Bird name: " +bird.getName());
+        bird.speak();
+        bird.eat("seeds");
+        bird.walk();
+        bird.fly();
+    }
 }
